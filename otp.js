@@ -1,25 +1,17 @@
 // otp.js
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
 const twilio = require('twilio');
 const nodemailer = require('nodemailer');
-
+require('dotenv').config();
 const router = express.Router();
+const db = require('./config/db');
 
 // MySQL Connection
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'mat_db',
-});
-
-connection.connect();
 
 // Twilio Configuration
-const twilioAccountSid = 'AC3be071c3431875fbd49a120fc66844d6';
-const twilioAuthToken = '507f49a7b6b7676aef81d147ed534c4f';
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = twilio(twilioAccountSid, twilioAuthToken);
 
 // Nodemailer Configuration
@@ -27,8 +19,8 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
   auth: {
-    user: 'muteeurrahmans8@gmail.com',
-    pass: 'qdzu wmes uogp igrh',
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASSWORD,
   },
 });
 
@@ -40,7 +32,7 @@ router.get('/generate/mobile/:userId', (req, res) => {
   const userId = req.params.userId;
 
   // Retrieve mobile number from User table
-  connection.query('SELECT MobileNumber FROM User WHERE UserID = ?', [userId], (err, results) => {
+  db.query('SELECT MobileNumber FROM User WHERE UserID = ?', [userId], (err, results) => {
     if (err) throw err;
 
     const mobileNumber = results[0].MobileNumber;
@@ -49,17 +41,17 @@ router.get('/generate/mobile/:userId', (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
 
     // Update OTP in OTP table
-    connection.query('INSERT INTO OTP (UserID, MobileOTP, MobileOTPExpiration) VALUES (?, ?, NOW() + INTERVAL 5 MINUTE) ON DUPLICATE KEY UPDATE MobileOTP = VALUES(MobileOTP), MobileOTPExpiration = VALUES(MobileOTPExpiration)', [userId, otp], (err) => {
+    db.query('INSERT INTO OTP (UserID, MobileOTP, MobileOTPExpiration) VALUES (?, ?, NOW() + INTERVAL 10 MINUTE) ON DUPLICATE KEY UPDATE MobileOTP = VALUES(MobileOTP), MobileOTPExpiration = VALUES(MobileOTPExpiration)', [userId, otp], (err) => {
       if (err) throw err;
 
       // Send OTP using Twilio
       twilioClient.messages.create({
         to: mobileNumber,
         from: '+16312505599',
-        body: `Your OTP is: ${otp}`,
+        body: `Your OTP for Christian Matrimony is ${otp}. This OTP is valid for 10 minutes.`,
       })
-      .then(() => res.send('OTP sent successfully'))
-      .catch((err) => res.status(500).send(err));
+        .then(() => res.json({ message: 'OTP sent successfully' }))
+        .catch((err) => res.status(500).json({ error: err.message }));
     });
   });
 });
@@ -70,7 +62,7 @@ router.post('/validate/mobile/:userId', (req, res) => {
   const { otp } = req.body;
 
   // Validate OTP
-  connection.query('SELECT MobileOTP, MobileOTPExpiration FROM OTP WHERE UserID = ?', [userId], (err, results) => {
+  db.query('SELECT MobileOTP, MobileOTPExpiration FROM OTP WHERE UserID = ?', [userId], (err, results) => {
     if (err) throw err;
 
     const mobileOTP = results[0].MobileOTP;
@@ -78,9 +70,9 @@ router.post('/validate/mobile/:userId', (req, res) => {
     const currentTime = new Date().getTime();
 
     if (mobileOTP === otp && expirationTime > currentTime) {
-      res.send('OTP verified successfully');
+      res.json({ message: 'OTP verified successfully' });
     } else {
-      res.status(401).send('Invalid OTP');
+      res.status(401).json({ error: 'Invalid OTP' });
     }
   });
 });
@@ -90,7 +82,7 @@ router.get('/generate/email/:userId', (req, res) => {
   const userId = req.params.userId;
 
   // Retrieve email from User table
-  connection.query('SELECT Email FROM User WHERE UserID = ?', [userId], (err, results) => {
+  db.query('SELECT Email FROM User WHERE UserID = ?', [userId], (err, results) => {
     if (err) throw err;
 
     const email = results[0].Email;
@@ -99,22 +91,62 @@ router.get('/generate/email/:userId', (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
 
     // Update OTP in OTP table
-    connection.query('INSERT INTO OTP (UserID, EmailOTP, EmailOTPExpiration) VALUES (?, ?, NOW() + INTERVAL 5 MINUTE) ON DUPLICATE KEY UPDATE EmailOTP = VALUES(EmailOTP), EmailOTPExpiration = VALUES(EmailOTPExpiration)', [userId, otp], (err) => {
+    db.query('INSERT INTO OTP (UserID, EmailOTP, EmailOTPExpiration) VALUES (?, ?, NOW() + INTERVAL 10 MINUTE) ON DUPLICATE KEY UPDATE EmailOTP = VALUES(EmailOTP), EmailOTPExpiration = VALUES(EmailOTPExpiration)', [userId, otp], (err) => {
       if (err) throw err;
 
       // Send OTP using Nodemailer
       const mailOptions = {
-        from: 'your_email',
+        from: 'Cristian Matrimony',
         to: email,
-        subject: 'OTP Verification',
-        text: `Your OTP is: ${otp}`,
+        subject: 'Christian Matrimony - OTP Verification',
+        html: `
+          <html>
+            <head>
+              <style>
+                body {
+                  font-family: 'Arial', sans-serif;
+                  color: #333;
+                }
+                .container {
+                  max-width: 600px;
+                  margin: 20px auto;
+                  padding: 20px;
+                  border: 1px solid #ccc;
+                  border-radius: 5px;
+                  background-color: #fff;
+                }
+                .header {
+                  font-size: 20px;
+                  font-weight: bold;
+                  color: #555;
+                }
+                .message {
+                  margin-top: 15px;
+                  font-size: 16px;
+                  line-height: 1.5;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">Christian Matrimony - OTP Verification</div>
+                <div class="message">
+                  <p>Hello,</p>
+                  <p>Your OTP for Christian Matrimony is: <strong>${otp}</strong>.</p>
+                  <p>This OTP is valid for 10 minutes.</p>
+                  <p>Best regards,<br>Christian Matrimony Team</p>
+                </div>
+              </div>
+            </body>
+          </html>
+        `,
       };
 
       transporter.sendMail(mailOptions, (error) => {
         if (error) {
-          res.status(500).send(error);
+          res.status(500).json({ error: error.message });
         } else {
-          res.send('OTP sent successfully');
+          res.json({ message: 'OTP sent successfully' });
         }
       });
     });
@@ -127,7 +159,7 @@ router.post('/validate/email/:userId', (req, res) => {
   const { otp } = req.body;
 
   // Validate OTP
-  connection.query('SELECT EmailOTP, EmailOTPExpiration FROM OTP WHERE UserID = ?', [userId], (err, results) => {
+  db.query('SELECT EmailOTP, EmailOTPExpiration FROM OTP WHERE UserID = ?', [userId], (err, results) => {
     if (err) throw err;
 
     const emailOTP = results[0].EmailOTP;
@@ -135,9 +167,9 @@ router.post('/validate/email/:userId', (req, res) => {
     const currentTime = new Date().getTime();
 
     if (emailOTP === otp && expirationTime > currentTime) {
-      res.send('OTP verified successfully');
+      res.json({ message: 'OTP verified successfully' });
     } else {
-      res.status(401).send('Invalid OTP');
+      res.status(401).json({ error: 'Invalid OTP' });
     }
   });
 });

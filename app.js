@@ -11,12 +11,6 @@ const familyDetailsRoutes = require('./routes/familyDetailsRoutes'); // Include 
 const educationalInfoRoutes = require('./routes/educationalInformationRoutes');
 const employmentDetailsRoutes = require('./routes/employmentDetailsRoutes'); // Include Employment Details Routes
 const referencesVerificationRoutes = require('./routes/referencesVerificationRoutes');
-// const partnerPreferenceRoutes = require('./routes/partnerPreferenceRoutes'); 
-// const basicPreferencesRoutes = require('./routes/basicPreferencesRoutes'); // Include Basic Preferences Routes
-// const castePreferencesRoutes = require('./routes/castePreferencesRoutes');
-// const educationalPreferenceRoutes = require('./routes/educationalPreferenceRoutes');
-// const employmentPreferenceRoutes = require('./routes/employmentPreferenceRoutes');
-// const locationPreferencesRoutes = require('./routes/locationPreferencesRoutes');
 const documentsVerificationRoutes = require('./routes/documentsVerificationRoutes'); // Include Documents Verification Routes
 const preferencesRoutes = require('./routes/preferencesRoutes');
 
@@ -47,12 +41,6 @@ app.use('/api', familyDetailsRoutes); // Use FamilyDetails Routes
 app.use('/api', educationalInfoRoutes);
 app.use('/api', employmentDetailsRoutes);
 app.use('/api', referencesVerificationRoutes); 
-// app.use('/api', partnerPreferenceRoutes); 
-// app.use('/api', basicPreferencesRoutes); 
-// app.use('/api', castePreferencesRoutes); 
-// app.use('/api', educationalPreferenceRoutes);
-// app.use('/api', employmentPreferenceRoutes); // Use Employment Preference Routes
-// app.use('/api', locationPreferencesRoutes);
 app.use('/api', documentsVerificationRoutes); // Use Documents Verification Routes
 app.use('/api', preferencesRoutes);
 
