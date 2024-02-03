@@ -1,55 +1,73 @@
-// app.js
 const express = require('express');
 const bodyParser = require('body-parser');
-const app = express();
+const mysqlPromise = require('mysql2/promise');
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// Routes
-const profileRoutes = require('./routes/profileRoutes');
-const martialStatusRoutes = require('./routes/martialStatusRoutes');
-const registrationRoutes = require('./routes/registrationRoutes');
+// Forms
+const userRoutes = require('./routes/userRoutes');
 const locationDetailsRoutes = require('./routes/locationDetailsRoutes');
 const religiousInformationRoutes = require('./routes/religiousInformationRoutes');
 const horoscopeInformationRoutes = require('./routes/horoscopeInformationRoutes');
-const familyDetailsRoutes = require('./routes/familyDetailsRoutes');
-const familyDetailsContinuedRoutes = require('./routes/familyDetailsContinuedRoutes');
-const educationalInformationRoutes = require('./routes/educationalInformationRoutes'); 
-const employmentDetailsRoutes = require('./routes/employmentDetailsRoutes'); 
-const referencesVerificationRoutes = require('./routes/referencesVerificationRoutes'); 
-const documentsVerificationRoutes = require('./routes/documentsVerificationRoutes'); 
-const partnerPreferenceRoutes = require('./routes/partnerPreferenceRoutes'); 
-const basicPreferencesRoutes = require('./routes/basicPreferencesRoutes'); 
-const castePreferencesRoutes = require('./routes/castePreferencesRoutes'); 
-const highestDegreePreferenceRoutes = require('./routes/highestDegreePreferenceRoutes'); 
-const employmentPreferenceRoutes = require('./routes/employmentPreferenceRoutes'); 
-const locationPreferencesRoutes = require('./routes/locationPreferencesRoutes'); 
-// Use Middleware for validation if needed
-// app.use(ValidationMiddleware.validateForm);
+const familyDetailsRoutes = require('./routes/familyDetailsRoutes'); // Include FamilyDetails Routes
+const educationalInfoRoutes = require('./routes/educationalInformationRoutes');
+const employmentDetailsRoutes = require('./routes/employmentDetailsRoutes'); // Include Employment Details Routes
+const referencesVerificationRoutes = require('./routes/referencesVerificationRoutes');
+// const partnerPreferenceRoutes = require('./routes/partnerPreferenceRoutes'); 
+// const basicPreferencesRoutes = require('./routes/basicPreferencesRoutes'); // Include Basic Preferences Routes
+// const castePreferencesRoutes = require('./routes/castePreferencesRoutes');
+// const educationalPreferenceRoutes = require('./routes/educationalPreferenceRoutes');
+// const employmentPreferenceRoutes = require('./routes/employmentPreferenceRoutes');
+// const locationPreferencesRoutes = require('./routes/locationPreferencesRoutes');
+const documentsVerificationRoutes = require('./routes/documentsVerificationRoutes'); // Include Documents Verification Routes
+const preferencesRoutes = require('./routes/preferencesRoutes');
 
-// Use Routes
-app.use('/profile', profileRoutes);
-app.use('/martialstatus', martialStatusRoutes);
-app.use('/registration', registrationRoutes);
-app.use('/locationdetails', locationDetailsRoutes);
-app.use('/religiousinformation', religiousInformationRoutes);
-app.use('/horoscopeinformation', horoscopeInformationRoutes);
-app.use('/familydetails', familyDetailsRoutes);
-app.use('/familydetailscontinued', familyDetailsContinuedRoutes);
-app.use('/educationalinformation', educationalInformationRoutes); 
-app.use('/employmentdetails', employmentDetailsRoutes); 
-app.use('/referencesverification', referencesVerificationRoutes); 
-app.use('/documentsverification', documentsVerificationRoutes); 
-app.use('/partnerpreference', partnerPreferenceRoutes); 
-app.use('/basicpreferences', basicPreferencesRoutes); 
-app.use('/castepreferences', castePreferencesRoutes); 
-app.use('/highestdegreepreference', highestDegreePreferenceRoutes); 
-app.use('/employmentpreference', employmentPreferenceRoutes); 
-app.use('/locationpreferences', locationPreferencesRoutes); 
+// Dashboard
+const matchesRoute = require('./routes/matches');
+const viewsRoutes = require('./routes/views');
+const shortlistsRoutes = require('./routes/shortlists');
+const expressionsRoutes = require('./routes/expressions');
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Login
+const authRoutes = require('./routes/auth');
+
+// OTP
+const OTPRoutes = require('./otp');
+
+
+const app = express();
+const port = 3000;
+
+app.use(bodyParser.json());
+
+// Routes
+app.use('/api', userRoutes);
+app.use('/api', locationDetailsRoutes);
+app.use('/api', religiousInformationRoutes);
+app.use('/api', horoscopeInformationRoutes);
+app.use('/api', familyDetailsRoutes); // Use FamilyDetails Routes
+app.use('/api', educationalInfoRoutes);
+app.use('/api', employmentDetailsRoutes);
+app.use('/api', referencesVerificationRoutes); 
+// app.use('/api', partnerPreferenceRoutes); 
+// app.use('/api', basicPreferencesRoutes); 
+// app.use('/api', castePreferencesRoutes); 
+// app.use('/api', educationalPreferenceRoutes);
+// app.use('/api', employmentPreferenceRoutes); // Use Employment Preference Routes
+// app.use('/api', locationPreferencesRoutes);
+app.use('/api', documentsVerificationRoutes); // Use Documents Verification Routes
+app.use('/api', preferencesRoutes);
+
+// Dashboard
+app.use('/api/matches', matchesRoute);
+app.use('/api', viewsRoutes);
+app.use('/api', shortlistsRoutes);
+app.use('/api', expressionsRoutes);
+
+// Login
+app.use('/api/auth', authRoutes);
+
+// OTP
+app.use('/otp', OTPRoutes);
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });

@@ -1,76 +1,75 @@
+// models/documentsVerificationModel.js
 const db = require('../config/db');
-const multer = require('multer');
-
-// Configure Multer to handle file uploads
-const storage = multer.memoryStorage(); // Store files in memory (you can configure it to save to disk if needed)
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 500000 } // Limit file size to 500 KB
-});
 
 class DocumentsVerification {
   static createDocumentsVerification(documentsVerificationData, callback) {
-    const {
-      UserID,
-      IdentityProof,
-      AddressProof,
-      EmploymentProof,
-      EducationProof
-    } = documentsVerificationData;
-
-    const sql = `
-      INSERT INTO DocumentsVerification (
-        UserID,
-        IdentityProof,
-        AddressProof,
-        EmploymentProof,
-        EducationProof
-      ) VALUES (?, ?, ?, ?, ?)
-    `;
-
+    const sql = 'INSERT INTO DocumentsVerification (UserID, IdentityProof, AddressProof, EmploymentProof, EducationProof) VALUES (?, ?, ?, ?, ?)';
     db.query(
       sql,
-      [UserID, IdentityProof, AddressProof, EmploymentProof, EducationProof],
+      [
+        documentsVerificationData.UserID,
+        documentsVerificationData.IdentityProof,
+        documentsVerificationData.AddressProof,
+        documentsVerificationData.EmploymentProof,
+        documentsVerificationData.EducationProof
+      ],
       (err, results) => {
         if (err) {
-          console.error('Error creating documents verification:', err);
+          console.error('Error creating DocumentsVerification:', err);
           callback(err, null);
         } else {
-          console.log('Documents verification created successfully');
+          console.log('DocumentsVerification created successfully');
           callback(null, results);
         }
       }
     );
   }
 
-  static uploadDocuments(req, res, next) {
-    // 'IdentityProof', 'AddressProof', 'EmploymentProof', 'EducationProof' are the field names in the form
-    const uploadMiddleware = upload.fields([
-      { name: 'IdentityProof', maxCount: 1 },
-      { name: 'AddressProof', maxCount: 1 },
-      { name: 'EmploymentProof', maxCount: 1 },
-      { name: 'EducationProof', maxCount: 1 }
-    ]);
-
-    uploadMiddleware(req, res, (err) => {
+  static getDocumentsVerificationById(documentsVerificationId, callback) {
+    const sql = 'SELECT * FROM DocumentsVerification WHERE DocumentsID = ?';
+    db.query(sql, [documentsVerificationId], (err, results) => {
       if (err) {
-        console.error('Error uploading documents:', err);
-        return res.status(500).json({ error: 'Error uploading documents' });
+        console.error('Error fetching DocumentsVerification:', err);
+        callback(err, null);
+      } else {
+        callback(null, results[0]);
       }
+    });
+  }
 
-      // The uploaded files are available in req.files
-      // Handle file processing or storage logic here
+  static updateDocumentsVerification(documentsVerificationId, documentsVerificationData, callback) {
+    const sql = 'UPDATE DocumentsVerification SET IdentityProof = ?, AddressProof = ?, EmploymentProof = ?, EducationProof = ? WHERE DocumentsID = ?';
+    db.query(
+      sql,
+      [
+        documentsVerificationData.IdentityProof,
+        documentsVerificationData.AddressProof,
+        documentsVerificationData.EmploymentProof,
+        documentsVerificationData.EducationProof,
+        documentsVerificationId
+      ],
+      (err, results) => {
+        if (err) {
+          console.error('Error updating DocumentsVerification:', err);
+          callback(err, null);
+        } else {
+          console.log('DocumentsVerification updated successfully');
+          callback(null, results);
+        }
+      }
+    );
+  }
 
-      // Example: storing file buffer in documentsVerificationData
-      req.documentsVerificationData = {
-        ...req.body,
-        IdentityProof: req.files['IdentityProof'][0].buffer,
-        AddressProof: req.files['AddressProof'][0].buffer,
-        EmploymentProof: req.files['EmploymentProof'][0].buffer,
-        EducationProof: req.files['EducationProof'][0].buffer
-      };
-
-      next();
+  static deleteDocumentsVerification(documentsVerificationId, callback) {
+    const sql = 'DELETE FROM DocumentsVerification WHERE DocumentsID = ?';
+    db.query(sql, [documentsVerificationId], (err, results) => {
+      if (err) {
+        console.error('Error deleting DocumentsVerification:', err);
+        callback(err, null);
+      } else {
+        console.log('DocumentsVerification deleted successfully');
+        callback(null, results);
+      }
     });
   }
 }

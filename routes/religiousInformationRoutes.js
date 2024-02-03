@@ -1,9 +1,18 @@
 // routes/religiousInformationRoutes.js
 const express = require('express');
+const ReligiousInformationService = require('../services/religiousInformationService');
 const router = express.Router();
-const religiousInformationService = require('../services/religiousInformationService');
 
-// Ensure there is a callback function for the post route
-router.post('/create', religiousInformationService.createReligiousInformation);
+// Create ReligiousInformation
+router.post('/religious-information', ReligiousInformationService.createReligiousInformation);
+
+// Get ReligiousInformation by ID
+router.get('/religious-information/:id', ReligiousInformationService.getReligiousInformationById);
+
+// Update ReligiousInformation
+router.put('/religious-information/:id', ReligiousInformationService.updateReligiousInformation);
+
+// Delete ReligiousInformation
+router.delete('/religious-information/:id', ReligiousInformationService.deleteReligiousInformation);
 
 module.exports = router;
