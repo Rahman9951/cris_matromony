@@ -1,17 +1,11 @@
+// routes/preferencesRoutes.js
 const express = require('express');
+const PreferencesService = require('../services/preferencesService');
 const router = express.Router();
-const preferencesService = require('../services/preferencesService');
 
-// Create Preferences
-router.post('/Preference', preferencesService.createPreferences);
-
-// Get Preferences by UserID
-router.get('/Preference/:userID', preferencesService.getPreferencesByUserID);
-
-// Update Preferences by UserID
-router.put('/Preference/:userID', preferencesService.updatePreferences);
-
-// Delete Preferences by UserID
-router.delete('/Preference/:userID', preferencesService.deletePreferences);
+router.post('/preferences', PreferencesService.createPreferences);
+router.get('/preferences/:id', PreferencesService.getPreferencesById);
+router.put('/preferences/:id', PreferencesService.updatePreferences);
+router.delete('/preferences/:id', PreferencesService.deletePreferences);
 
 module.exports = router;

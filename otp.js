@@ -69,7 +69,9 @@ router.post('/validate/mobile/:userId', (req, res) => {
     const expirationTime = new Date(results[0].MobileOTPExpiration).getTime();
     const currentTime = new Date().getTime();
 
-    if (mobileOTP === otp && expirationTime > currentTime) {
+    if (currentTime > expirationTime) {
+      res.status(401).json({ error: 'OTP has expired' });
+    } else if (mobileOTP === otp) {
       res.json({ message: 'OTP verified successfully' });
     } else {
       res.status(401).json({ error: 'Invalid OTP' });
@@ -166,7 +168,9 @@ router.post('/validate/email/:userId', (req, res) => {
     const expirationTime = new Date(results[0].EmailOTPExpiration).getTime();
     const currentTime = new Date().getTime();
 
-    if (emailOTP === otp && expirationTime > currentTime) {
+    if (currentTime > expirationTime) {
+      res.status(401).json({ error: 'OTP has expired' });
+    } else if (emailOTP === otp) {
       res.json({ message: 'OTP verified successfully' });
     } else {
       res.status(401).json({ error: 'Invalid OTP' });

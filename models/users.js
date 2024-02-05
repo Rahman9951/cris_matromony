@@ -1,16 +1,29 @@
 // models/users.js
-
 const db = require('../config/db');
 
 const Users = {
-  // Function to authenticate a user by Matrimony ID, Mobile No, or Email ID and Password
   authenticateUser: async (matrimonyIdOrMobileOrEmail, password) => {
-    const [results] = await pool.execute(
-      'SELECT * FROM User WHERE (MobileNumber = ? OR Email = ?) AND LoginPassword = ?',
-      [matrimonyIdOrMobileOrEmail, matrimonyIdOrMobileOrEmail, matrimonyIdOrMobileOrEmail, password]
-    );
+    try {
+      // Your SQL query and execution here using db.query
+      // Example:
+      const query = 'SELECT * FROM User WHERE (MobileNumber = ? OR Email = ?) AND LoginPassword = ?';
+      const queryParams = [matrimonyIdOrMobileOrEmail, matrimonyIdOrMobileOrEmail, password];
 
-    return results[0];
+      const results = await new Promise((resolve, reject) => {
+        db.query(query, queryParams, (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        });
+      });
+
+      return results[0];
+    } catch (error) {
+      console.error('Error during user authentication:', error.message);
+      throw error;
+    }
   },
 };
 

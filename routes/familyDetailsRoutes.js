@@ -3,16 +3,9 @@ const express = require('express');
 const FamilyDetailsService = require('../services/familyDetailsService');
 const router = express.Router();
 
-// Create FamilyDetails
-router.post('/fd', FamilyDetailsService.createFamilyDetails);
-
-// Get FamilyDetails by UserID
-router.get('/fd/:userId', FamilyDetailsService.getFamilyDetailsById);
-
-// Update FamilyDetails by UserID
-router.put('/fd/:userId', FamilyDetailsService.updateFamilyDetails);
-
-// Delete FamilyDetails by UserID
-router.delete('/fd/:userId', FamilyDetailsService.deleteFamilyDetails);
+router.post('/familyDetails', FamilyDetailsService.createFamilyDetails);
+router.get('/familyDetails/:id', FamilyDetailsService.getFamilyDetailsById);
+router.put('/familyDetails/:id', FamilyDetailsService.updateFamilyDetails);
+router.delete('/familyDetails/:id', FamilyDetailsService.deleteFamilyDetails);
 
 module.exports = router;

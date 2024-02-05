@@ -2,51 +2,76 @@
 const EducationalInformation = require('../models/educationalInformationModel');
 
 class EducationalInformationService {
-  static createEducationInfo(req, res) {
+  static createEducationalInformation(req, res) {
     const educationData = req.body;
 
-    EducationalInformation.createEducationInfo(educationData, (err, results) => {
+    const requiredFields = [
+      'UserID',
+      'HighestDegree',
+      'DegreeDetail',
+      'InstitutionName',
+      'InstitutionLocation'
+    ];
+
+    // Check for missing fields
+    const missingFields = requiredFields.filter(field => !educationData[field]);
+
+    if (missingFields.length > 0) {
+      const errorMessage = {};
+      missingFields.forEach(field => {
+        errorMessage[field] = `${field} field is missing`;
+      });
+
+      res.status(400).json({ error: errorMessage });
+      return;
+    }
+
+    EducationalInformation.createEducationalInformation(educationData, (err, results) => {
       if (err) {
         res.status(500).json({ message: 'Internal Server Error' });
       } else {
-        res.status(201).json({ message: 'EducationalInformation created successfully' });
+        res.status(201).json({ message: 'Educational information created successfully' });
       }
     });
   }
 
-  static getEducationInfoById(req, res) {
-    const educationId = req.params.id;
+  static getEducationalInformationById(req, res) {
+    const userId = req.params.id;
 
-    EducationalInformation.getEducationInfoById(educationId, (err, results) => {
+    EducationalInformation.getEducationalInformationById(userId, (err, educationDetails) => {
       if (err) {
         res.status(500).json({ message: 'Internal Server Error' });
       } else {
-        res.status(200).json(results);
+        if (!educationDetails) {
+          res.status(404).json({ message: 'Educational information not found' });
+        } else {
+          res.status(200).json(educationDetails);
+        }
       }
     });
   }
 
-  static updateEducationInfo(req, res) {
-    const educationId = req.params.id;
+  static updateEducationalInformation(req, res) {
+    const userId = req.params.id;
     const educationData = req.body;
 
-    EducationalInformation.updateEducationInfo(educationId, educationData, (err, results) => {
+    EducationalInformation.updateEducationalInformation(userId, educationData, (err, results) => {
       if (err) {
         res.status(500).json({ message: 'Internal Server Error' });
       } else {
-        res.status(200).json({ message: 'EducationalInformation updated successfully' });
+        res.status(200).json({ message: 'Educational information updated successfully' });
       }
     });
   }
 
-  static deleteEducationInfo(req, res) {
-    const educationId = req.params.id;
+  static deleteEducationalInformation(req, res) {
+    const userId = req.params.id;
 
-    EducationalInformation.deleteEducationInfo(educationId, (err, results) => {
+    EducationalInformation.deleteEducationalInformation(userId, (err, results) => {
       if (err) {
         res.status(500).json({ message: 'Internal Server Error' });
       } else {
-        res.status(200).json({ message: 'EducationalInformation deleted successfully' });
+        res.status(200).json({ message: 'Educational information deleted successfully' });
       }
     });
   }

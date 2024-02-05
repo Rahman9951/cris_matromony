@@ -1,34 +1,31 @@
 // models/familyDetailsModel.js
 const db = require('../config/db');
 
-class FamilyDetailsModel {
-  static createFamilyDetails(familyData, callback) {
-    const sql = `INSERT INTO FamilyDetails 
-                 (UserID, FathersOccupation, MothersOccupation, NumBrothers, NumBrothersMarried, 
-                 NumSisters, NumSistersMarried, FamilyStatus, FamilyType, FamilyNativePlace, FamilyPhoto, AboutFamily) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+class FamilyDetails {
+  static createFamilyDetails(familyDetailsData, callback) {
+    const sql = 'INSERT INTO FamilyDetails (UserID, FathersOccupation, MothersOccupation, NumBrothers, NumBrothersMarried, NumSisters, NumSistersMarried, FamilyStatus, FamilyType, FamilyNativePlace, AboutFamily) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    
     db.query(
       sql,
       [
-        familyData.UserID,
-        familyData.FathersOccupation,
-        familyData.MothersOccupation,
-        familyData.NumBrothers,
-        familyData.NumBrothersMarried,
-        familyData.NumSisters,
-        familyData.NumSistersMarried,
-        familyData.FamilyStatus,
-        familyData.FamilyType,
-        familyData.FamilyNativePlace,
-        familyData.FamilyPhoto,
-        familyData.AboutFamily
+        familyDetailsData.UserID,
+        familyDetailsData.FathersOccupation,
+        familyDetailsData.MothersOccupation,
+        familyDetailsData.NumBrothers,
+        familyDetailsData.NumBrothersMarried,
+        familyDetailsData.NumSisters,
+        familyDetailsData.NumSistersMarried,
+        familyDetailsData.FamilyStatus,
+        familyDetailsData.FamilyType,
+        familyDetailsData.FamilyNativePlace,
+        familyDetailsData.AboutFamily,
       ],
       (err, results) => {
         if (err) {
-          console.error('Error creating FamilyDetails:', err);
+          console.error('Error creating family details:', err);
           callback(err, null);
         } else {
-          console.log('FamilyDetails created successfully');
+          console.log('Family details created successfully');
           callback(null, results);
         }
       }
@@ -39,7 +36,7 @@ class FamilyDetailsModel {
     const sql = 'SELECT * FROM FamilyDetails WHERE UserID = ?';
     db.query(sql, [userId], (err, results) => {
       if (err) {
-        console.error('Error fetching FamilyDetails:', err);
+        console.error('Error fetching family details:', err);
         callback(err, null);
       } else {
         callback(null, results[0]);
@@ -47,23 +44,20 @@ class FamilyDetailsModel {
     });
   }
 
-  static updateFamilyDetails(userId, familyData, callback) {
-    const updateFields = Object.entries(familyData)
-      .filter(([key, value]) => key !== 'UserID' && value !== undefined)
-      .map(([key, value]) => `${key} = ?`)
-      .join(', ');
-
-    const values = Object.values(familyData);
-    values.push(userId);
+  static updateFamilyDetails(userId, familyDetailsData, callback) {
+    const updateFields = Object.entries(familyDetailsData).map(([key, value]) => `${key} = ?`).join(', ');
 
     const sql = `UPDATE FamilyDetails SET ${updateFields} WHERE UserID = ?`;
 
+    const values = Object.values(familyDetailsData);
+    values.push(userId);
+
     db.query(sql, values, (err, results) => {
       if (err) {
-        console.error('Error updating FamilyDetails:', err);
+        console.error('Error updating family details:', err);
         callback(err, null);
       } else {
-        console.log('FamilyDetails updated successfully');
+        console.log('Family details updated successfully');
         callback(null, results);
       }
     });
@@ -73,14 +67,14 @@ class FamilyDetailsModel {
     const sql = 'DELETE FROM FamilyDetails WHERE UserID = ?';
     db.query(sql, [userId], (err, results) => {
       if (err) {
-        console.error('Error deleting FamilyDetails:', err);
+        console.error('Error deleting family details:', err);
         callback(err, null);
       } else {
-        console.log('FamilyDetails deleted successfully');
+        console.log('Family details deleted successfully');
         callback(null, results);
       }
     });
   }
 }
 
-module.exports = FamilyDetailsModel;
+module.exports = FamilyDetails;
