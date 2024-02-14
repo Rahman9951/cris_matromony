@@ -13,7 +13,7 @@ const employmentDetailsRoutes = require('./routes/employmentDetailsRoutes'); // 
 const referencesVerificationRoutes = require('./routes/referencesVerificationRoutes');
 const documentsVerificationRoutes = require('./routes/documentsVerificationRoutes'); // Include Documents Verification Routes
 const preferencesRoutes = require('./routes/preferencesRoutes');
-
+const photosRoutes = require('./routes/photosRoutes');
 // Dashboard
 const matchesRoute = require('./routes/matches');
 const viewsRoutes = require('./routes/views');
@@ -32,6 +32,7 @@ const port = 3000;
 
 app.use(bodyParser.json());
 
+
 // Routes
 app.use('/api', userRoutes);
 app.use('/api', locationDetailsRoutes);
@@ -43,7 +44,7 @@ app.use('/api', employmentDetailsRoutes);
 app.use('/api', referencesVerificationRoutes); 
 app.use('/api', documentsVerificationRoutes); // Use Documents Verification Routes
 app.use('/api', preferencesRoutes);
-
+app.use('/api', photosRoutes);
 // Dashboard
 app.use('/api/matches', matchesRoute);
 app.use('/api', viewsRoutes);

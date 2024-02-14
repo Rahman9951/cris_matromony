@@ -1,4 +1,3 @@
-// models/familyDetailsModel.js
 const db = require('../config/db');
 
 class FamilyDetails {
@@ -46,12 +45,9 @@ class FamilyDetails {
 
   static updateFamilyDetails(userId, familyDetailsData, callback) {
     const updateFields = Object.entries(familyDetailsData).map(([key, value]) => `${key} = ?`).join(', ');
-
     const sql = `UPDATE FamilyDetails SET ${updateFields} WHERE UserID = ?`;
-
     const values = Object.values(familyDetailsData);
     values.push(userId);
-
     db.query(sql, values, (err, results) => {
       if (err) {
         console.error('Error updating family details:', err);
@@ -71,6 +67,19 @@ class FamilyDetails {
         callback(err, null);
       } else {
         console.log('Family details deleted successfully');
+        callback(null, results);
+      }
+    });
+  }
+
+  static updateFamilyPhoto(userId, photoPath, callback) {
+    const sql = 'UPDATE FamilyDetails SET FamilyPhoto = ? WHERE UserID = ?';
+    db.query(sql, [photoPath, userId], (err, results) => {
+      if (err) {
+        console.error('Error updating family photo path:', err);
+        callback(err, null);
+      } else {
+        console.log('Family photo path updated successfully');
         callback(null, results);
       }
     });

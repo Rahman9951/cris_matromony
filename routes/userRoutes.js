@@ -1,11 +1,11 @@
-// routes/userRoutes.js
 const express = require('express');
-const UserService = require('../services/userService');
 const router = express.Router();
+const { authenticateToken } = require('../middlewares/authMiddleware');
+const userService = require('../services/userService');
 
-router.post('/users', UserService.createUser);
-router.get('/users/:id', UserService.getUserById);
-router.put('/users/:id', UserService.updateUser);
-router.delete('/users/:id', UserService.deleteUser);
+router.post('/users', authenticateToken, userService.createUser);
+router.get('/users/:id', authenticateToken, userService.getUserById);
+router.put('/users/:id', authenticateToken, userService.updateUser);
+router.delete('/users/:id', authenticateToken, userService.deleteUser);
 
 module.exports = router;
