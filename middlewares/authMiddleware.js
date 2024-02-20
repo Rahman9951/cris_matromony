@@ -1,3 +1,6 @@
+
+//middlewares/authMiddleware.js
+
 const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
@@ -11,4 +14,14 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-module.exports = { authenticateToken };
+const authorize = (requiredRole) => (req, res, next) => {
+  const userRole = req.user.role; // Assuming role is included in the JWT payload
+
+  if (userRole !== requiredRole) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  next();
+};
+
+module.exports = { authenticateToken, authorize };

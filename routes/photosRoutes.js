@@ -25,19 +25,19 @@ const fileSizeCheck = (req, res, next) => {
 };
 
 // Routes
-router.post('/photo/:userId/:photoType', upload, fileSizeCheck, (req, res) => {
+router.post('/photo/:photoType/:userId', upload, fileSizeCheck, (req, res) => {
   const userId = req.params.userId;
   const photoType = req.params.photoType;
   PhotosService.uploadPhoto(req, res, userId, photoType);
 });
 
-router.get('/photo/:userId/:photoType', (req, res) => {
+router.get('/photo/:photoType/:userId', (req, res) => {
   const userId = req.params.userId;
   const photoType = req.params.photoType;
   PhotosService.getPhoto(req, res, userId, photoType);
 });
 
-router.delete('/photo/:userId/:photoType', (req, res) => {
+router.delete('/photo/:photoType/:userId', (req, res) => {
   const userId = req.params.userId;
   const photoType = req.params.photoType;
   PhotosService.deletePhoto(req, res, userId, photoType);

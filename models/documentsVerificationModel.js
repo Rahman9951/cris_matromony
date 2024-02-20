@@ -1,14 +1,14 @@
 const db = require('../config/db');
 
 class DocumentsVerification {
-  static insertDocument(userId, fileType, filePath, callback) {
-    const sql = `INSERT INTO DocumentsVerification (UserID, ${fileType}) VALUES (?, ?) ON DUPLICATE KEY UPDATE ${fileType} = ?`;
-    db.query(sql, [userId, filePath, filePath], (err, results) => {
+  static insertDocuments(userId, identityProof, addressProof, employmentProof, educationProof, callback) {
+    const sql = `INSERT INTO DocumentsVerification (UserID, IdentityProof, AddressProof, EmploymentProof, EducationProof) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE IdentityProof = ?, AddressProof = ?, EmploymentProof = ?, EducationProof = ?`;
+    db.query(sql, [userId, identityProof, addressProof, employmentProof, educationProof, identityProof, addressProof, employmentProof, educationProof], (err, results) => {
       if (err) {
-        console.error('Error inserting document:', err);
+        console.error('Error inserting documents:', err);
         callback(err, null);
       } else {
-        console.log('Document inserted or updated successfully');
+        console.log('Documents inserted or updated successfully');
         callback(null, results);
       }
     });

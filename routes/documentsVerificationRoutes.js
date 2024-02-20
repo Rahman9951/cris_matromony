@@ -14,36 +14,32 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: { fileSize: 500000 } // 500 KB limit
-}).single('file');
-
-// File size check middleware
-const fileSizeCheck = (req, res, next) => {
-  if (req.file && req.file.size > 500000) {
-    return res.status(400).json({ message: 'File size exceeds the limit of 500KB' });
-  }
-  next();
-};
+}).fields([
+  { name: 'identityProof', maxCount: 1 },
+  { name: 'addressProof', maxCount: 1 },
+  { name: 'employmentProof', maxCount: 1 },
+  { name: 'educationProof', maxCount: 1 }
+]);
 
 // Routes
-router.post('/document/:userId/:fileType', upload, fileSizeCheck, (req, res) => {
+router.post('/documents/:userId', upload, (req, res) => {
   const userId = req.params.userId;
-  const fileType = req.params.fileType;
-  DocumentsVerificationService.uploadDocument(req, res, userId, fileType);
+  DocumentsVerificationService.uploadDocuments(req, res, userId);
 });
 
-router.get('/document/:userId/:fileType', (req, res) => {
+router.get('/document/:fileType/:userId', (req, res) => {
   const userId = req.params.userId;
   const fileType = req.params.fileType;
   DocumentsVerificationService.downloadDocument(req, res, userId, fileType);
 });
 
-router.put('/document/:userId/:fileType', upload, fileSizeCheck, (req, res) => {
+router.put('/document/:fileType/:userId', upload, (req, res) => {
   const userId = req.params.userId;
   const fileType = req.params.fileType;
   DocumentsVerificationService.updateDocument(req, res, userId, fileType);
 });
 
-router.delete('/document/:userId/:fileType', (req, res) => {
+router.delete('/document/:fileType/:userId', (req, res) => {
   const userId = req.params.userId;
   const fileType = req.params.fileType;
   DocumentsVerificationService.deleteDocument(req, res, userId, fileType);

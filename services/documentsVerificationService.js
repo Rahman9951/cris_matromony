@@ -2,13 +2,20 @@ const path = require('path');
 const DocumentsVerification = require('../models/documentsVerificationModel');
 
 class DocumentsVerificationService {
-  static uploadDocument(req, res, userId, fileType) {
-    const filePath = req.file.path;
-    DocumentsVerification.insertDocument(userId, fileType, filePath, (err, results) => {
+  static uploadDocuments(req, res, userId) {
+    const { identityProof, addressProof, employmentProof, educationProof } = req.files;
+    
+    // Extract file paths
+    const identityProofPath = identityProof ? identityProof[0].path : null;
+    const addressProofPath = addressProof ? addressProof[0].path : null;
+    const employmentProofPath = employmentProof ? employmentProof[0].path : null;
+    const educationProofPath = educationProof ? educationProof[0].path : null;
+
+    DocumentsVerification.insertDocuments(userId, identityProofPath, addressProofPath, employmentProofPath, educationProofPath, (err, results) => {
       if (err) {
         res.status(500).json({ message: 'Internal Server Error' });
       } else {
-        res.status(200).json({ message: 'Document uploaded successfully' });
+        res.status(200).json({ message: 'Documents uploaded successfully' });
       }
     });
   }
